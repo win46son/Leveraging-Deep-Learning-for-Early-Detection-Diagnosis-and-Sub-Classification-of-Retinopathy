@@ -72,7 +72,3 @@ for label in label_names:
     plt.show()
 
     xgb_model.save_model(f'DR/subclass_model/{label}_xgb_model.json')
-    # print(confusion_matrix(y_test, y_pred))
-# df = pd.read_csv(f'DR\\softmax_results\\Train\\Mild.csv')
-# try1 = df.drop(['label', 'cluster'], axis=1)
-# print(try1.head())
