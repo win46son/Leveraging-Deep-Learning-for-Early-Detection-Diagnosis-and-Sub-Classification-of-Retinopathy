@@ -74,19 +74,10 @@ class EfficientNet(nn.Module):
         )
     
     def forward(self, x):
-        # 提取特征
         features = self.model.features(x)
-        
-        # 平均池化
         features = self.model.avgpool(features)
-        
-        # 展平
         features = torch.flatten(features, 1)
-        
-        # 应用注意力机制
         features = self.attention(features)
-        
-        # 通过分类器 - 使用self.model.classifier
         return self.model.classifier(features)
     
 def create_efficientnet_dr():
