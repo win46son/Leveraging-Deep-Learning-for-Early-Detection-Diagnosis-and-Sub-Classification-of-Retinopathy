@@ -18,7 +18,7 @@ from EfficientNet import create_efficientnet_dr
 from DataPreparation_1 import train_dataset, test_dataset, label_names, ClaheMedian
 
 class OriginalDataset:
-    """创建基于原始数据的数据集，只包含基本transform"""
+    # 创建基于原始数据的数据集，只包含基本transform
     def __init__(self, data_dir, use_augmented=False):
         self.use_augmented = use_augmented
         self.image_paths = []
@@ -78,11 +78,11 @@ class FeatureExtractor:
         self.hook_registered = False
         
     def hook_fn(self, module, input, output):
-        """Hook函数，用于捕获中间层的输出"""
+        # Hook函数，用于捕获中间层的输出
         self.features.append(output.detach().cpu().numpy())
     
     def register_hook(self, target_layer_name="model.classifier.10"):
-        """注册hook到指定层"""
+        # 注册hook到指定层
         print("Model structure:")
         for name, module in self.model.named_modules():
             if 'classifier' in name:
@@ -103,7 +103,7 @@ class FeatureExtractor:
         return True
     
     def extract_features_for_class(self, dataset, target_class_idx, device, batch_size=64):
-        """为特定类别提取特征"""
+        # 为特定类别提取特征
         self.model.eval()
         self.features = []  # 清空特征
         
@@ -161,7 +161,7 @@ class FeatureExtractor:
             return None, None, None, None, None
 
 def find_optimal_clusters_for_class(features, class_name, method='both', max_clusters=8, min_silhouette=0.3):
-    """为单个类别找最优聚类数和方法，允许不分组"""
+    # 为单个类别找最优聚类数和方法，允许不分组
     print(f"\nFinding optimal clustering for {class_name}...")
     print(f"Total samples: {len(features)}")
     
@@ -254,7 +254,7 @@ def test_kmeans_with_threshold(features_scaled, max_clusters, class_name, min_si
     }
 
 def test_dbscan_with_threshold(features_scaled, class_name, min_silhouette=0.3):
-    """测试DBSCAN，如果效果不好就建议不分组"""
+    # 测试DBSCAN，如果效果不好就建议不分组
     eps_values = np.arange(0.3, 2.1, 0.3)
     min_samples_values = [3, 5, 8]
     
@@ -312,7 +312,7 @@ def test_dbscan_with_threshold(features_scaled, class_name, min_silhouette=0.3):
     }
 
 def choose_best_clustering_or_single(results, class_name, min_silhouette=0.3):
-    """选择最佳聚类方法，或者决定保持单一类别"""
+    # 选择最佳聚类方法，或者决定保持单一类别
     best_method = 'single'
     best_params = {'n_clusters': 1}
     best_score = -1
@@ -350,7 +350,7 @@ def choose_best_clustering_or_single(results, class_name, min_silhouette=0.3):
     return best_method, best_params
 
 def perform_clustering_for_class(features, class_name, method, params, scaler):
-    """为单个类别执行聚类，包括单一类别的情况"""
+    # 为单个类别执行聚类，包括单一类别的情况
     if method == 'single':
         # 不分组，所有样本都是同一个子类
         cluster_labels = np.zeros(len(features), dtype=int)
@@ -380,7 +380,7 @@ def perform_clustering_for_class(features, class_name, method, params, scaler):
     return cluster_labels, clusterer
 
 def visualize_class_clusters(features, cluster_labels, class_name, save_dir=None):
-    """可视化单个类别的聚类结果"""
+    # 可视化单个类别的聚类结果
     print(f"Creating visualization for {class_name}...")
     
     # PCA降维到2D
@@ -405,7 +405,7 @@ def visualize_class_clusters(features, cluster_labels, class_name, save_dir=None
 
 def save_class_results(features, cluster_labels, class_name, class_idx, 
                       sample_indices, image_paths, method, params, save_dir='DR/class_wise_subclasses'):
-    """保存单个类别的聚类结果，包括单一类别的情况"""
+    # 保存单个类别的聚类结果，包括单一类别的情况
     class_dir = os.path.join(save_dir, class_name)
     os.makedirs(class_dir, exist_ok=True)
     
@@ -469,7 +469,7 @@ def save_class_results(features, cluster_labels, class_name, class_idx,
 
 def process_all_classes(extractor, dataset, device, clustering_method='both', 
                        save_dir='DR/class_wise_subclasses', min_silhouette=0.3):
-    """处理所有DR类别，允许某些类别保持单一子类"""
+    # 处理所有DR类别，允许某些类别保持单一子类
     os.makedirs(save_dir, exist_ok=True)
     
     all_results = {}
